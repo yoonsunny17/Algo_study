@@ -1,38 +1,56 @@
 '''
-미완성 코드
+다른사람 코드 참고
+잠기지 않는 높이를 기준으로 함
 '''
 
 from collections import deque
 from pprint import pprint
 
-def bfs(board):
+def bfs(r, c, numb):
     q = deque()
+    q.append([r, c])
+    visited[r][c] = 1
 
+    while q:
+        r, c = q.popleft()
+        for i in range(4):
+            rr = r + dr[i]
+            cc = c + dc[i]
+            # 탐색 지점이 범위 내에 존재할 때
+            if 0 <= rr < n and 0 <= cc < n:
+                # 그 지점이 물에 안잠기면서 방문한 적 없는 지점이라면
+                if graph[rr][cc] > numb and not visited[rr][cc]:
+                    # 방문 기록 남기고 탐색 지점 넘기자
+                    visited[rr][cc] = 1
+                    q.append([rr, cc])
 
+n = int(input())
+max_num = 0
+graph = []
 
-N = int(input())
-matrix = [list(map(int, input().split())) for _ in range(N)]
-board = [[1] * N for _ in range(N)]
+for _ in range(n):
+    low = list(map(int, input().split()))
+    graph.append(low)
 
-numbs = [0] * 101  # matrix 안에 존재하는 높이 체크해주기
-for i in range(N):
-    for j in range(N):
-        if numbs[matrix[i][j]] == 0:
-            numbs[matrix[i][j]] = 1
+    for i in low:
+        if i > max_num:
+            max_num = i
 
-cnt = 0  # 안전 영역 몇개인지 세어 줄 변수
-
-# 상 하 좌 우
+# delta
 dr = [-1, 1, 0, 0]
 dc = [0, 0, -1, 1]
 
-for i in range(len(numbs)):
-    if numbs[i] == 1:
-        height = i
-        for r in range(N):
-            for c in range(N):
-                if matrix[r][c] <= height:
-                    board[r][c] = 0
+result = []
 
-        # pprint(board)
-        bfs(board)
+for i in range(max_num):
+    cnt = 0
+    visited = [[0]*n for _ in range(n)]
+    for r in range(n):
+        for c in range(n):
+            if graph[r][c] > i and not visited[r][c]:
+                bfs(r, c, i)
+                cnt += 1
+
+    result.append(cnt)
+
+print(max(result))
